@@ -122,7 +122,7 @@ void prepare_new_block ( EState* s )
    s->nblock = 0;
    s->numZ = 0;
    s->state_out_pos = 0;
-   BZ_INITIALISE_CRC ( s->blockCRC );
+   BZ_INITIALISE_CRC ( &s->blockCRC );
    for (i = 0; i < 256; i++) s->inUse[i] = False;
    s->blockNo++;
 }
@@ -220,7 +220,7 @@ void add_pair_to_block ( EState* s )
    Int32 i;
    UChar ch = (UChar)(s->state_in_ch);
    for (i = 0; i < s->state_in_len; i++) {
-      BZ_UPDATE_CRC( s->blockCRC, ch );
+      BZ_UPDATE_CRC( &s->blockCRC, ch );
    }
    s->inUse[s->state_in_ch] = True;
    switch (s->state_in_len) {
@@ -266,7 +266,7 @@ void flush_RL ( EState* s )
    if (zchh != zs->state_in_ch &&                 \
        zs->state_in_len == 1) {                   \
       UChar ch = (UChar)(zs->state_in_ch);        \
-      BZ_UPDATE_CRC( zs->blockCRC, ch );          \
+      BZ_UPDATE_CRC( &zs->blockCRC, ch );         \
       zs->inUse[zs->state_in_ch] = True;          \
       zs->block[zs->nblock] = (UChar)ch;          \
       zs->nblock++;                               \
@@ -547,7 +547,7 @@ Bool unRLE_obuf_to_output_FAST ( DState* s )
             if (s->strm->avail_out == 0) return False;
             if (s->state_out_len == 0) break;
             *( (UChar*)(s->strm->next_out) ) = s->state_out_ch;
-            BZ_UPDATE_CRC ( s->calculatedBlockCRC, s->state_out_ch );
+            BZ_UPDATE_CRC ( &s->calculatedBlockCRC, s->state_out_ch );
             s->state_out_len--;
             s->strm->next_out++;
             s->strm->avail_out--;
@@ -615,7 +615,7 @@ Bool unRLE_obuf_to_output_FAST ( DState* s )
                if (cs_avail_out == 0) goto return_notr;
                if (c_state_out_len == 1) break;
                *( (UChar*)(cs_next_out) ) = c_state_out_ch;
-               BZ_UPDATE_CRC ( c_calculatedBlockCRC, c_state_out_ch );
+               BZ_UPDATE_CRC ( &c_calculatedBlockCRC, c_state_out_ch );
                c_state_out_len--;
                cs_next_out++;
                cs_avail_out--;
@@ -626,7 +626,7 @@ Bool unRLE_obuf_to_output_FAST ( DState* s )
                   c_state_out_len = 1; goto return_notr;
                };
                *( (UChar*)(cs_next_out) ) = c_state_out_ch;
-               BZ_UPDATE_CRC ( c_calculatedBlockCRC, c_state_out_ch );
+               BZ_UPDATE_CRC ( &c_calculatedBlockCRC, c_state_out_ch );
                cs_next_out++;
                cs_avail_out--;
             }
@@ -717,7 +717,7 @@ Bool unRLE_obuf_to_output_SMALL ( DState* s )
             if (s->strm->avail_out == 0) return False;
             if (s->state_out_len == 0) break;
             *( (UChar*)(s->strm->next_out) ) = s->state_out_ch;
-            BZ_UPDATE_CRC ( s->calculatedBlockCRC, s->state_out_ch );
+            BZ_UPDATE_CRC ( &s->calculatedBlockCRC, s->state_out_ch );
             s->state_out_len--;
             s->strm->next_out++;
             s->strm->avail_out--;
@@ -766,7 +766,7 @@ Bool unRLE_obuf_to_output_SMALL ( DState* s )
             if (s->strm->avail_out == 0) return False;
             if (s->state_out_len == 0) break;
             *( (UChar*)(s->strm->next_out) ) = s->state_out_ch;
-            BZ_UPDATE_CRC ( s->calculatedBlockCRC, s->state_out_ch );
+            BZ_UPDATE_CRC ( &s->calculatedBlockCRC, s->state_out_ch );
             s->state_out_len--;
             s->strm->next_out++;
             s->strm->avail_out--;
@@ -824,7 +824,7 @@ int BZ_API(BZ2_bzDecompress) ( bz_stream *strm )
             corrupt = unRLE_obuf_to_output_FAST  ( s );
          if (corrupt) return BZ_DATA_ERROR;
          if (s->nblock_used == s->save_nblock+1 && s->state_out_len == 0) {
-            BZ_FINALISE_CRC ( s->calculatedBlockCRC );
+            BZ_FINALISE_CRC ( &s->calculatedBlockCRC );
             if (s->verbosity >= 3)
                VPrintf2 ( " {0x%08x, 0x%08x}", s->storedBlockCRC,
                           s->calculatedBlockCRC );
