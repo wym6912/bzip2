@@ -1,8 +1,10 @@
+
+add_rust_test(NAME bzlib_rust WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/bzlib_rust")
+
 if (ENABLE_APP)
     set(sample1 -1 sample1.ref sample1.bz2)
     set(sample2 -2 sample2.ref sample2.bz2)
     set(sample3 -3 sample3.ref sample3.bz2)
-
 
     foreach(TEST
         "${sample1}"

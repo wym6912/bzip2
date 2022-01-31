@@ -34,6 +34,11 @@ set(ENABLE_EXAMPLES_DEFAULT OFF)
 set(ENABLE_DOCS_DEFAULT OFF)
 include(CMakeOptions.txt)
 
+#
+# Find Build Tools
+#
+find_package(Rust REQUIRED)
+
 if(ENABLE_LIB_ONLY AND (ENABLE_APP OR ENABLE_EXAMPLES))
     # Remember when disabled options are disabled for later diagnostics.
     set(ENABLE_LIB_ONLY_DISABLED_OTHERS 1)
@@ -211,11 +216,11 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/bzip2.pc
 #   In a larger project, the following would be in subdirectories and
 #   These targets would be included with `add_subdirectory()`
 #
+add_subdirectory(bzlib_rust)
+
 set(BZ2_SOURCES
     blocksort.c
     huffman.c
-    crctable.c
-    randtable.c
     compress.c
     decompress.c
     bzlib.c)
@@ -249,6 +254,10 @@ if(ENABLE_SHARED_LIB)
     set_target_properties(bz2 PROPERTIES
         COMPILE_FLAGS "${WARNCFLAGS}"
         VERSION ${LT_VERSION} SOVERSION ${LT_SOVERSION})
+    target_link_libraries(bz2 PUBLIC BZip2::bzlib_rust)
+    if(WIN32)
+        target_link_libraries(bz2 PUBLIC wsock32 ws2_32)
+    endif()
     install(TARGETS bz2 DESTINATION ${CMAKE_INSTALL_LIBDIR})
     install(FILES bzlib.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
@@ -287,6 +296,10 @@ if(ENABLE_STATIC_LIB)
         SOVERSION           ${LT_SOVERSION}
         ARCHIVE_OUTPUT_NAME bz2_static)
     target_compile_definitions(bz2_static PUBLIC BZ2_STATICLIB)
+    target_link_libraries(bz2_static PUBLIC BZip2::bzlib_rust)
+    if(WIN32)
+        target_link_libraries(bz2_static PUBLIC wsock32 ws2_32)
+    endif()
     install(TARGETS bz2_static DESTINATION ${CMAKE_INSTALL_LIBDIR})
     install(FILES bzlib.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 endif()
@@ -297,7 +310,10 @@ if(ENABLE_APP)
     target_sources(bzip2
         PRIVATE   bzip2.c)
     target_link_libraries(bzip2
-        PRIVATE   bz2_ObjLib)
+        PRIVATE   bz2_ObjLib BZip2::bzlib_rust)
+    if(WIN32)
+        target_link_libraries(bzip2 PUBLIC wsock32 ws2_32)
+    endif()
     if(WIN32)
         target_compile_definitions(bzip2 PUBLIC BZ_LCCWIN32 BZ_UNIX=0)
     else()
@@ -315,7 +331,10 @@ if(ENABLE_APP)
     target_sources(bzip2recover
         PRIVATE   bzip2recover.c)
     target_link_libraries(bzip2recover
-        PRIVATE bz2_ObjLib)
+        PRIVATE bz2_ObjLib BZip2::bzlib_rust)
+    if(WIN32)
+        target_link_libraries(bzip2recover PUBLIC wsock32 ws2_32)
+    endif()
     if(WIN32)
         target_compile_definitions(bzip2recover PUBLIC BZ_LCCWIN32 BZ_UNIX=0)
     else()
@@ -386,6 +405,7 @@ message(STATUS "Summary of build options:
     Compiler:
         Build type:     ${CMAKE_BUILD_TYPE}
         C compiler:     ${CMAKE_C_COMPILER}
+        Rust toolchain: ${cargo_EXECUTABLE} (${cargo_VERSION})
         CFLAGS:         ${CMAKE_C_FLAGS_${_build_type}} ${CMAKE_C_FLAGS}
         WARNCFLAGS:     ${WARNCFLAGS}
     Test:
