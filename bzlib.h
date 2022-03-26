@@ -76,7 +76,12 @@ typedef
 #endif
 
 #ifdef _WIN32
-#   include <windows.h>
+#   ifndef __wtypes_h__
+#   include <wtypes.h>
+#   endif
+#   ifndef __WINDEF_
+#   include <minwindef.h>
+#   endif
 #   ifdef small
       /* windows.h define small to char */
 #      undef small
