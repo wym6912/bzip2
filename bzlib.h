@@ -76,20 +76,16 @@ typedef
 #endif
 
 #ifdef _WIN32
-#   include <windows.h>
 #   ifdef small
-      /* windows.h define small to char */
+       /* windows.h define small to char, and we use small as a variable name */
 #      undef small
 #   endif
-#   ifndef WINAPI
-#   define WINAPI
-#   endif
 #   ifdef BZ_EXPORT
-#   define BZ_API(func) WINAPI func
+#   define BZ_API(func) __stdcall func
 #   define BZ_EXTERN extern
 #   else
    /* import windows dll dynamically */
-#   define BZ_API(func) (WINAPI * func)
+#   define BZ_API(func) (__stdcall * func)
 #   define BZ_EXTERN
 #   endif
 #else
