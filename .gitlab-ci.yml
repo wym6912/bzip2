@@ -89,40 +89,35 @@ debian:testing:meson:
   image: $AMD64_DEBIAN_TESTING
   before_script:
     - apt-get update -y
-    - apt-get install -y gcc meson python3-distutils python3-pip valgrind
-    - pip3 install pytest
+    - apt-get install -y gcc meson python3-distutils python3-pytest valgrind
 
 debian:testing:cmake:debug:
   extends: ".cmake_test_debug"
   image: $AMD64_DEBIAN_TESTING
   before_script:
     - apt-get update -y
-    - apt-get install -y gcc make python3-pip cmake valgrind
-    - pip3 install pytest
+    - apt-get install -y gcc make python3-pytest cmake valgrind
 
 debian:testing:cmake:
   extends: ".cmake_test"
   image: $AMD64_DEBIAN_TESTING
   before_script:
     - apt-get update -y
-    - apt-get install -y gcc make python3-pip cmake valgrind
-    - pip3 install pytest
+    - apt-get install -y gcc make python3-pytest cmake valgrind
 
 debian:testing:cmake:shared_static:
   extends: ".cmake_test_shared_static"
   image: $AMD64_DEBIAN_TESTING
   before_script:
     - apt-get update -y
-    - apt-get install -y gcc make python3-pip cmake valgrind
-    - pip3 install pytest
+    - apt-get install -y gcc make python3-pytest cmake valgrind
 
 debian:testing:cmake:static_only:
   extends: ".cmake_test_static_only"
   image: $AMD64_DEBIAN_TESTING
   before_script:
     - apt-get update -y
-    - apt-get install -y gcc make python3-pip cmake valgrind
-    - pip3 install pytest
+    - apt-get install -y gcc make python3-pytest cmake valgrind
 
 ubuntu:bionic:meson:
   extends: ".meson_test"
@@ -138,6 +133,7 @@ ubuntu:bionic:cmake:
   before_script:
     - apt-get update -y
     - apt-get install -y gcc make python3-pip valgrind
+    - pip3 install --upgrade pip
     - pip3 install pytest cmake
 
 ubuntu:bionic:i386:meson:
@@ -154,6 +150,7 @@ ubuntu:bionic:i386:cmake:
   before_script:
     - apt-get update -y
     - apt-get install -y gcc make python3-pip valgrind
+    - pip3 install --upgrade pip
     - pip3 install pytest cmake
 
 fedora:30:meson:
