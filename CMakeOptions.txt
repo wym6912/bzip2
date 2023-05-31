@@ -23,3 +23,5 @@ option(ENABLE_STATIC_LIB "Build libbz2 in static mode also")
 option(ENABLE_SHARED_LIB "Build libbz2 as a shared library" ON)
 
 option(USE_OLD_SONAME "Use libbz2.so.1.0 for compatibility with old Makefiles" OFF)
+
+option(ENABLE_STATIC_LIB_IS_PIC "Enable position independent code for the static library" ON)

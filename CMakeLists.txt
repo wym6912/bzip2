@@ -305,8 +305,10 @@ if(ENABLE_SHARED_LIB)
                   ${CMAKE_CURRENT_SOURCE_DIR}/libbz2.def
         PUBLIC    ${CMAKE_CURRENT_SOURCE_DIR}/bzlib_private.h
         INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/bzlib.h)
+
     # Always use '-fPIC'/'-fPIE' option for shared libraries.
     set_property(TARGET bz2 PROPERTY POSITION_INDEPENDENT_CODE ON)
+
     set_target_properties(bz2 PROPERTIES
         COMPILE_FLAGS "${WARNCFLAGS}"
         VERSION ${LT_VERSION} SOVERSION ${LT_SOVERSION})
@@ -321,7 +323,7 @@ if(ENABLE_SHARED_LIB)
             add_library(bz2_old_soname SHARED ${BZ2_RES})
             target_sources(bz2_old_soname
                 PRIVATE   ${BZ2_SOURCES}
-                        ${CMAKE_CURRENT_SOURCE_DIR}/libbz2.def
+                          ${CMAKE_CURRENT_SOURCE_DIR}/libbz2.def
                 PUBLIC    ${CMAKE_CURRENT_SOURCE_DIR}/bzlib_private.h
                 INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/bzlib.h
             )
@@ -342,6 +344,13 @@ if(ENABLE_STATIC_LIB)
         PRIVATE     ${BZ2_SOURCES}
         PUBLIC      ${CMAKE_CURRENT_SOURCE_DIR}/bzlib_private.h
         INTERFACE   ${CMAKE_CURRENT_SOURCE_DIR}/bzlib.h)
+
+    # Use '-fPIC'/'-fPIE' option for static libraries by default.
+    # You may build with ENABLE_STATIC_LIB_IS_PIC=OFF to disable PIC for the static library.
+    if(ENABLE_STATIC_LIB_IS_PIC)
+        set_property(TARGET bz2_static PROPERTY POSITION_INDEPENDENT_CODE ON)
+    endif()
+
     set_target_properties(bz2_static PROPERTIES
         COMPILE_FLAGS       "${WARNCFLAGS}"
         VERSION             ${LT_VERSION}

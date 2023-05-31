@@ -269,3 +269,13 @@ mkdir build && cd build
 cmake .. -DUSE_OLD_SONAME=ON
 cmake --build .
 ```
+
+`ENABLE_STATIC_LIB_IS_PIC`: Default: `ON`
+Disabling this option will make it so that building the static library will not
+use the '-fPIC'/'-fPIE' compiler options. You may need to disable this option if
+your compiler cannot generate position-independent code for your platform. E.g.:
+```sh
+mkdir build && cd build
+cmake .. -DENABLE_STATIC_LIB_IS_PIC=OFF
+cmake --build .
+```
